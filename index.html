@@ -3,185 +3,84 @@
 <head>  
     <meta charset="UTF-8">  
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-    <title>ROHAN SECURITY | CYBERPUNK CONSOLE</title>  
-    
-    <!-- Firebase -->  
+    <title>ROHAN SECURITY | DEBUG MODE</title>  
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>  
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>  
-  
-    <!-- Libraries -->  
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />  
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>  
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">  
 
 <style>  
-    /* --- 100% ORIGINAL CYBERPUNK THEME --- */  
-    :root {  
-        --bg-color: #050505; --panel-bg: #0a0f14;  
-        --neon-blue: #00f3ff; --neon-red: #ff0055; --neon-green: #00ff41;  
-        --glass: rgba(0, 243, 255, 0.05);  
-        --border: 1px solid rgba(0, 243, 255, 0.3);  
-    }  
+    /* SAME DESIGN */
+    :root { --bg-color: #050505; --panel-bg: #0a0f14; --neon-blue: #00f3ff; --neon-red: #ff0055; --neon-green: #00ff41; --border: 1px solid rgba(0, 243, 255, 0.3); }  
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Share Tech Mono', monospace; outline: none; }  
     body { background-color: var(--bg-color); color: var(--neon-blue); height: 100vh; overflow: hidden; display: flex; }  
-    ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-thumb { background: var(--neon-blue); }  
-
-    /* --- LOGIN --- */  
-    #login-screen { position: fixed; inset: 0; background: black; z-index: 9999; display: flex; justify-content: center; align-items: center; background-image: radial-gradient(#111 20%, transparent 20%); background-size: 10px 10px; }  
-    .terminal-box { border: 2px solid var(--neon-blue); padding: 40px; width: 450px; text-align: center; box-shadow: 0 0 25px var(--neon-blue); background: #000; }  
+    #login-screen { position: fixed; inset: 0; background: black; z-index: 9999; display: flex; justify-content: center; align-items: center; }  
+    .terminal-box { border: 2px solid var(--neon-blue); padding: 40px; width: 450px; text-align: center; background: #000; }  
     .hacker-input { background: transparent; border: none; border-bottom: 2px solid var(--neon-red); color: white; font-size: 1.2rem; padding: 10px; width: 100%; text-align: center; margin: 20px 0; }  
-    .cyber-btn { background: var(--glass); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 12px; font-weight: bold; width: 100%; cursor: pointer; transition: 0.3s; letter-spacing: 2px; }  
-    .cyber-btn:hover { background: var(--neon-blue); color: black; box-shadow: 0 0 15px var(--neon-blue); }  
-
-    /* --- SIDEBAR --- */  
-    .sidebar { width: 80px; background: var(--panel-bg); border-right: var(--border); display: flex; flex-direction: column; align-items: center; padding-top: 20px; overflow-y: auto; }  
-    .nav-icon { width: 50px; height: 50px; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; color: #555; font-size: 1.4rem; cursor: pointer; transition: 0.3s; border-radius: 8px; flex-shrink: 0; }  
-    .nav-icon:hover, .nav-icon.active { color: var(--neon-blue); border: var(--border); background: var(--glass); box-shadow: 0 0 10px var(--glass); }  
-
-    /* --- CONTENT --- */  
-    .content { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at center, #111, #000); }  
-    .header { height: 70px; border-bottom: var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: rgba(0,0,0,0.9); }  
-    .brand { font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 2px; text-shadow: 0 0 10px var(--neon-blue); }  
-    .device-dropdown { background: black; color: var(--neon-green); border: 1px solid var(--neon-green); padding: 8px; min-width: 250px; font-family: 'Share Tech Mono'; }  
-
-    /* --- PAGES --- */  
-    #main-app { display: none; width: 100%; height: 100%; }  
-    .page { display: none; padding: 25px; overflow-y: auto; height: 100%; }  
-    .page.active { display: block; animation: glitch 0.2s; }  
-    @keyframes glitch { 0% { opacity: 0; transform: translateX(-5px); } 100% { opacity: 1; transform: translateX(0); } }  
-
-    /* --- WIDGETS --- */  
-    .cyber-card { border: var(--border); background: rgba(0,0,0,0.7); padding: 20px; margin-bottom: 20px; position: relative; }  
-    .cyber-card::before { content:''; position: absolute; top:0; left:0; width:3px; height:100%; background: var(--neon-blue); }  
-    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }  
-    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }  
-
-    /* --- DOWNLOAD BUTTONS --- */  
-    .save-btn { background: #064e3b; color: #34d399; border: 1px solid #34d399; padding: 5px 10px; font-size: 0.7rem; cursor: pointer; float: right; margin-top: 5px; font-family: 'Share Tech Mono'; }  
-    .save-btn:hover { background: #34d399; color: black; }  
-    .danger-btn { border-color: var(--neon-red); color: var(--neon-red); }  
-    .danger-btn:hover { background: var(--neon-red); color: white; box-shadow: 0 0 10px var(--neon-red); }  
-
-    /* --- MEDIA & TABLES --- */  
-    .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }  
-    .media-item { border: 1px solid #333; padding: 5px; background: #000; text-align: center; }  
-    .media-item img { width: 100%; height: 120px; object-fit: cover; }  
-      
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }  
-    th { text-align: left; color: var(--neon-red); border-bottom: 1px solid var(--neon-red); padding: 10px; }  
-    td { padding: 10px; border-bottom: 1px solid #333; color: #ccc; }  
-
-    #map { width: 100%; height: 100%; filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(90%); border: var(--border); }  
-    
-    .app-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding: 10px 0; }
-    .blocked-app { opacity: 0.5; text-decoration: line-through; color: var(--neon-red); }
+    .cyber-btn { background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 12px; width: 100%; cursor: pointer; }  
+    .sidebar { width: 80px; background: var(--panel-bg); border-right: var(--border); display: flex; flex-direction: column; align-items: center; padding-top: 20px; }  
+    .content { flex: 1; display: flex; flex-direction: column; background: #111; }  
+    .nav-icon { width: 50px; height: 50px; margin-bottom: 20px; font-size: 1.4rem; color: #555; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+    .nav-icon.active { color: var(--neon-blue); border: var(--border); }
+    .header { height: 70px; border-bottom: var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; }
+    .device-dropdown { background: black; color: var(--neon-green); border: 1px solid var(--neon-green); padding: 8px; min-width: 250px; }
+    #main-app { display: none; width: 100%; height: 100%; }
+    .page { display: none; padding: 25px; height: 100%; overflow-y: auto; }
+    .page.active { display: block; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+    .cyber-card { border: var(--border); background: rgba(0,0,0,0.5); padding: 20px; }
+    #map { width: 100%; height: 100%; }
 </style>
-
 </head>  
 <body>  
 
-<!-- LOGIN SCREEN -->  
 <div id="login-screen">  
     <div class="terminal-box">  
-        <h1 style="font-family:'Orbitron';">ROHAN<br>SECURITY</h1>  
-        <p style="color:var(--neon-red); margin-top:10px;">PARENT ACCESS TERMINAL</p>  
-        
+        <h1 style="font-family:'Orbitron';">ROHAN SECURITY</h1>  
         <input type="text" id="pass-key" class="hacker-input" placeholder="ENTER LICENSE KEY">  
         <div id="login-msg" style="color:var(--neon-green); font-size:0.8rem; height:20px;"></div>
-        <button onclick="checkLicense()" class="cyber-btn">VERIFY ACCESS</button>  
+        <button onclick="checkLicense()" class="cyber-btn">CONNECT</button>  
     </div>  
 </div>  
 
-<!-- MAIN APP -->  
 <div id="main-app">  
-    <!-- SIDEBAR -->  
     <div class="sidebar">  
-        <div class="nav-icon active" onclick="nav('dashboard')" title="Dashboard"><i class="fas fa-microchip"></i></div>  
-        <div class="nav-icon" onclick="nav('map')" title="Location"><i class="fas fa-globe-asia"></i></div>  
-        <div class="nav-icon" onclick="nav('files')" title="Files"><i class="fas fa-folder-open"></i></div>  
-        <div class="nav-icon" onclick="nav('gallery')" title="Gallery"><i class="fas fa-images"></i></div>  
-        <div class="nav-icon" onclick="nav('audio')" title="Audio"><i class="fas fa-microphone-alt"></i></div>  
-        <div class="nav-icon" onclick="nav('keylog')" title="Keylogger"><i class="fas fa-keyboard"></i></div>
-        <div class="nav-icon" onclick="nav('notifications')" title="Notifications"><i class="fas fa-bell"></i></div>
-        <div class="nav-icon" onclick="nav('apps')" title="App Blocker"><i class="fas fa-ban"></i></div>
-        <div class="nav-icon" onclick="nav('logs')" title="SMS Logs"><i class="fas fa-database"></i></div>  
-        <div class="nav-icon" style="margin-top:auto; color:var(--neon-red);" onclick="location.reload()"><i class="fas fa-power-off"></i></div>  
+        <div class="nav-icon active" onclick="nav('dashboard')"><i class="fas fa-microchip"></i></div>  
+        <div class="nav-icon" onclick="nav('map')"><i class="fas fa-globe-asia"></i></div>  
+        <div class="nav-icon" onclick="nav('files')"><i class="fas fa-folder-open"></i></div>  
+        <div class="nav-icon" onclick="nav('logs')"><i class="fas fa-database"></i></div>  
     </div>  
 
     <div class="content">  
         <div class="header">  
-            <div class="brand">ROHAN<span style="color:var(--neon-blue)">_SEC</span></div>  
+            <div style="font-family:'Orbitron'">ROHAN_SEC</div>  
             <select id="device-select" class="device-dropdown" onchange="deviceChanged()"></select>  
-            <div style="border:1px solid var(--neon-green); color:var(--neon-green); padding:5px 10px; font-size:0.8rem;">SECURE</div>  
+            <div style="color:var(--neon-green); border:1px solid var(--neon-green); padding:5px;">SECURE</div>  
         </div>  
 
-        <!-- DASHBOARD -->  
         <div id="page-dashboard" class="page active">  
-            <h2 style="color:white; margin-bottom:20px;">> SYSTEM_STATUS</h2>  
+            <h2 style="color:white; margin-bottom:20px;">> STATUS_MONITOR</h2>  
             <div class="grid-3">  
                 <div class="cyber-card"><h3>BATTERY</h3><h1 id="stat-bat">--%</h1></div>  
                 <div class="cyber-card"><h3>STATUS</h3><h2 id="stat-status" style="color:var(--neon-green)">--</h2></div>  
                 <div class="cyber-card"><h3>LAST SEEN</h3><h2 id="stat-seen">--:--</h2></div>  
             </div>  
-
-            <h3 style="color:gray; margin:20px 0;">> QUICK_ACTIONS</h3>  
-            <div class="grid-4">  
-                <button class="cyber-btn" onclick="cmd('torch')"><i class="fas fa-lightbulb"></i> TORCH</button>  
-                <button class="cyber-btn" onclick="cmd('vibrate')"><i class="fas fa-mobile"></i> VIBRATE</button>  
-                <button class="cyber-btn danger-btn" onclick="cmd('ringDevice')"><i class="fas fa-bullhorn"></i> SIREN</button>  
-                <button class="cyber-btn danger-btn" onclick="cmd('lockDevice')"><i class="fas fa-lock"></i> LOCK</button>  
-            </div>  
-            <div class="grid-4" style="margin-top:10px;">  
-                <button class="cyber-btn" onclick="cmd('capturePhoto')"><i class="fas fa-camera"></i> SPY CAM</button>  
-                <button class="cyber-btn" onclick="cmd('recordAudio')"><i class="fas fa-microphone"></i> REC MIC</button>  
-                <button class="cyber-btn" onclick="cmd('getSMS')"><i class="fas fa-sync"></i> SYNC SMS</button>  
-                <button class="cyber-btn" onclick="cmd('getApps')"><i class="fas fa-list"></i> APP LIST</button>  
-            </div>  
+            <div class="cyber-card" style="margin-top:20px;">
+                <h3>DEBUG LOG (Error Checking)</h3>
+                <div id="debug-console" style="color:yellow; font-size:0.8rem; margin-top:10px;">Waiting for connection...</div>
+            </div>
         </div>  
-
-        <!-- OTHER PAGES -->  
-        <div id="page-map" class="page" style="padding:0;"><div id="map"></div></div>  
-
-        <div id="page-files" class="page">  
-            <div style="display:flex; justify-content:space-between;"><h2>> FILE_EXPLORER</h2><button class="cyber-btn" style="width:auto;" onclick="cmd('getFileList')">REFRESH</button></div>  
-            <div class="cyber-card" id="file-list-container"><div style="padding:20px;">WAITING FOR DATA...</div></div>  
-        </div>  
-
-        <div id="page-gallery" class="page">  
-            <div style="display:flex; justify-content:space-between;"><h2>> CAPTURED_MEDIA</h2><button class="cyber-btn" style="width:auto;" onclick="cmd('capturePhoto')">TRIGGER CAM</button></div>  
-            <div class="media-grid" id="gallery-container" style="margin-top:15px;"></div>  
-        </div>  
-
-        <div id="page-audio" class="page">  
-            <div style="display:flex; justify-content:space-between;"><h2>> AUDIO_LOGS</h2><button class="cyber-btn" style="width:auto;" onclick="cmd('recordAudio')">TRIGGER MIC</button></div>  
-            <div id="audio-container" style="margin-top:15px;"></div>  
-        </div> 
         
-        <div id="page-keylog" class="page">
-            <div class="cyber-card"><h3>> KEYSTROKE_LOGGER</h3><table id="table-keylog"><thead><tr><th>APP</th><th>TEXT</th><th>TIME</th></tr></thead><tbody></tbody></table></div>
-        </div>
-
-        <div id="page-notifications" class="page">
-             <div class="cyber-card"><h3>> INCOMING_NOTIFICATIONS</h3><table id="table-notif"><thead><tr><th>APP</th><th>TITLE</th><th>MESSAGE</th><th>TIME</th></tr></thead><tbody></tbody></table></div>
-        </div>
-
-        <div id="page-apps" class="page">
-            <div style="display:flex; justify-content:space-between;"><h2>> APP_MANAGER</h2><button class="cyber-btn" style="width:auto;" onclick="cmd('getApps')">REFRESH LIST</button></div>  
-            <div class="cyber-card" id="app-list-container"><div style="padding:20px;">Load app list to manage blocks...</div></div>
-        </div>
-
-        <div id="page-logs" class="page">  
-            <div class="cyber-card">  
-                <div style="display:flex; justify-content:space-between;"><h3>SMS LOGS</h3><button class="save-btn" style="width:auto;" onclick="downloadTable('table-sms', 'sms.csv')">EXPORT CSV</button></div>  
-                <table id="table-sms"><thead><tr><th>SENDER</th><th>MSG</th><th>TIME</th></tr></thead><tbody></tbody></table>  
-            </div>  
-        </div>  
+        <div id="page-map" class="page"><div id="map"></div></div>
+        <div id="page-files" class="page"><div class="cyber-card"><h3>FILES</h3><div id="file-list-container">Loading...</div></div></div>
+        <div id="page-logs" class="page"><div class="cyber-card"><h3>SMS LOGS</h3><table id="table-sms" style="width:100%; color:#ccc;"><tbody></tbody></table></div></div>
     </div>  
 </div>  
 
 <script>  
-    // --- FIREBASE CONFIG ---  
+    // --- APKA CONFIG ---
     const firebaseConfig = {  
         apiKey: "AIzaSyD7sJ0zu4cotmntqYzmaxROzwHmx8_ExvI",  
         authDomain: "children-safty.firebaseapp.com",  
@@ -193,242 +92,135 @@
     };  
     firebase.initializeApp(firebaseConfig);  
     const db = firebase.database();  
-    let map, markers = {}, currentId = null;  
-    let parentLicenseKey = ""; 
+    let map, parentLicenseKey = ""; 
 
-    // --- 1. SECURE LOGIN ---  
+    function log(msg) {
+        console.log(msg);
+        const d = document.getElementById('debug-console');
+        if(d) d.innerHTML += "<br>> " + msg;
+    }
+
     function checkLicense() {  
-        const key = document.getElementById('pass-key').value.trim();  
+        // 1. TRIM aur UPPERCASE (Typing mistake fix)
+        const key = document.getElementById('pass-key').value.trim().toUpperCase();  
         const msg = document.getElementById('login-msg');
         
-        if(!key) { msg.innerText = "Please enter a key"; return; }
-        msg.innerText = "Verifying...";
-
-        let myAdminID = localStorage.getItem('admin_unique_id');
-        if(!myAdminID) {
-            myAdminID = "ADMIN-" + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('admin_unique_id', myAdminID);
-        }
+        if(!key) { msg.innerText = "Enter Key"; return; }
+        msg.innerText = "Checking Database...";
 
         db.ref('company_system/licenses/' + key).once('value', snap => {
             if(snap.exists()) {
-                const data = snap.val();
-                if(data.status !== "Active") { msg.style.color = "var(--neon-red)"; msg.innerText = "ACCESS DENIED: " + data.status; return; }
-                if(Date.now() > data.expiry) { msg.style.color = "var(--neon-red)"; msg.innerText = "LICENSE EXPIRED"; return; }
-
-                if(!data.claimedByAdmin) {
-                    db.ref('company_system/licenses/' + key + '/claimedByAdmin').set(myAdminID);
-                } else if (data.claimedByAdmin !== myAdminID) {
-                    msg.style.color = "var(--neon-red)"; msg.innerText = "ERROR: Key active on another device!"; return; 
-                }
-
+                log("License Found: " + key);
                 parentLicenseKey = key;
-                msg.style.color = "var(--neon-green)"; msg.innerText = "ACCESS GRANTED.";
-                
-                setTimeout(() => {
-                    document.getElementById('login-screen').style.display = 'none';  
-                    document.getElementById('main-app').style.display = 'flex';  
-                    initMap();  
-                    listenDevices(); 
-                }, 1000);
+                document.getElementById('login-screen').style.display = 'none';  
+                document.getElementById('main-app').style.display = 'flex';  
+                initMap();  
+                listenDevices(); 
             } else {
-                msg.style.color = "var(--neon-red)"; msg.innerText = "INVALID LICENSE KEY";
+                msg.innerText = "Key Not Found in DB!";
+                log("Error: Key " + key + " does not exist.");
             }
         });
     }  
 
-    // --- 2. STRICT LISTENER (Only shows Online if Data exists) ---  
     function listenDevices() {
         const sel = document.getElementById('device-select');
-        
-        // Agar license key nahi hai toh return
-        if(!parentLicenseKey) return;
+        sel.innerHTML = '<option>SCANNING...</option>';
+        log("Scanning for devices on key: " + parentLicenseKey);
 
         db.ref('company_system/licenses/' + parentLicenseKey).on('value', licenseSnap => {
             const licenseData = licenseSnap.val();
-            if (!licenseData) return;
-
             let deviceIds = [];
-            if (licenseData.adminDeviceId && typeof licenseData.adminDeviceId === 'string') deviceIds.push(licenseData.adminDeviceId);
+
+            // Method A: Old
+            if (licenseData.adminDeviceId) {
+                deviceIds.push(licenseData.adminDeviceId);
+                log("Found Single Device: " + licenseData.adminDeviceId);
+            }
+            // Method B: New List
             if (licenseData.devices) {
-                Object.keys(licenseData.devices).forEach(id => { if(!deviceIds.includes(id)) deviceIds.push(id); });
+                Object.keys(licenseData.devices).forEach(id => {
+                    if(!deviceIds.includes(id)) deviceIds.push(id);
+                });
+                log("Found Device List: " + JSON.stringify(deviceIds));
             }
 
-            // Agar license mein koi ID nahi hai, toh "Waiting" dikhao
             if (deviceIds.length === 0) {
-                sel.innerHTML = '<option>WAITING FOR CHILD APP...</option>';
+                sel.innerHTML = '<option>NO DEVICES FOUND</option>';
                 document.getElementById('stat-status').innerText = "PENDING CONNECTION";
+                log("License exists but NO DEVICES linked. Please login in User App.");
                 return;
             }
 
             sel.innerHTML = ''; 
-            let deviceFound = false;
-
+            
             deviceIds.forEach(targetId => {
-                // STRICT CHECK: Hum 'users' node ko sun rahe hain
+                log("Checking Data for Device: " + targetId);
+                
                 db.ref('users/' + targetId).on('value', userSnap => {
-                    
-                    // AGAR DATA NAHI HAI -> TOH IGNORE KARO (STRICT MODE)
                     if(!userSnap.exists()) {
-                        // Agar list khali hai aur data nahi mil raha, toh default waiting message rakho
-                        if(sel.options.length === 0 && !deviceFound) {
-                             sel.innerHTML = '<option>WAITING FOR DATA...</option>';
-                        }
-                        return; 
+                        log("⚠️ Device " + targetId + " linked, BUT NO DATA in 'users' folder.");
+                    } else {
+                        log("✅ Data Received for: " + targetId);
                     }
 
-                    deviceFound = true;
-                    // Data mil gaya, ab dropdown mein add karo
-                    const d = userSnap.val(); 
-                    const info = d.info || {};
-                    const name = info.name || 'Device ' + targetId.substr(0,4);
+                    // STRICT MODE HATA DIYA HAI (Dikhna chahiye chahe data ho ya na ho)
+                    const d = userSnap.val() || {};
+                    const name = d.info?.name || targetId;
                     
-                    // Dropdown Duplicate Check
                     let existingOpt = sel.querySelector(`option[value="${targetId}"]`);
                     if (!existingOpt) {
-                        // Agar "Waiting" likha hai toh usse hatao pehle
-                        if(sel.options[0] && sel.options[0].text.includes("WAITING")) {
-                            sel.innerHTML = '';
-                        }
-
                         let opt = document.createElement('option');
                         opt.value = targetId;
-                        opt.text = `${name} [ONLINE]`;
+                        opt.text = `${name} [CONNECTED]`;
                         sel.add(opt);
                     }
-
-                    // Map Update
-                    const loc = d.location || {};
-                    if(loc.latitude) {
-                        if(markers[targetId]) {
-                            markers[targetId].setLatLng([loc.latitude, loc.longitude]);
-                        } else {
-                            markers[targetId] = L.marker([loc.latitude, loc.longitude]).addTo(map).bindPopup(name);
-                        }
-                        if(currentId === null) map.setView([loc.latitude, loc.longitude], 15);
-                    }
-
-                    // Auto Select First
-                    if(!currentId) {
-                        sel.value = targetId;
-                        currentId = targetId;
-                        deviceChanged();
-                    }
+                    
+                    // Auto select
+                    if(sel.value === targetId) deviceChanged();
                 });
             });
         });
     }
 
-    // --- 3. DATA RENDERER ---
-    function deviceChanged() {  
-        currentId = document.getElementById('device-select').value;  
-        if(!currentId || currentId.includes("WAITING")) return;  
-
-        db.ref(`users/${currentId}`).on('value', snap => {  
-            const d = snap.val() || {};  
-            const info = d.info || {};
-
-            document.getElementById('stat-bat').innerText = (info.battery || 0) + "%";  
-            document.getElementById('stat-status').innerText = info.status || "OFFLINE";  
+    function deviceChanged() {
+        const id = document.getElementById('device-select').value;
+        if(!id) return;
+        
+        db.ref('users/' + id).on('value', snap => {
+            const d = snap.val() || {};
+            document.getElementById('stat-bat').innerText = (d.info?.battery || 0) + "%";
+            document.getElementById('stat-status').innerText = d.info?.status || "WAITING";
+            document.getElementById('stat-seen').innerText = new Date(d.info?.lastSeen || Date.now()).toLocaleTimeString();
             
-            const lastSeen = info.lastSeen ? new Date(info.lastSeen).toLocaleTimeString() : "--:--";
-            document.getElementById('stat-seen').innerText = lastSeen;
-              
-            if(d.location?.latitude) map.setView([d.location.latitude, d.location.longitude], 15);  
-
-            renderFiles(d.files);
-            renderGallery(d.logs?.photos);
-            renderAudio(d.logs?.audio);
-            renderTable('table-sms', d.logs?.sms, ['sender','msg','time']);  
-            renderTable('table-keylog', d.logs?.keylog, ['app', 'text', 'time']);
-            renderTable('table-notif', d.logs?.notifications, ['app', 'title', 'text', 'time']);
-            renderAppList(d.installedApps);
-        });  
-    }  
-
-    // --- HELPER FUNCTIONS ---
-    function renderFiles(filesData) {
-        const fDiv = document.getElementById('file-list-container');  
-        fDiv.innerHTML = '';  
-        if(filesData) {  
-            Object.values(filesData).forEach(f => {  
-                let icon = f.isFolder ? '<i class="fas fa-folder" style="color:orange"></i>' : '<i class="fas fa-file" style="color:cyan"></i>';  
-                fDiv.innerHTML += `<div style="padding:10px; border-bottom:1px solid #333;">${icon} ${f.name}</div>`;  
-            });  
-        } else { fDiv.innerHTML = '<div style="padding:20px;">NO FILES DATA</div>'; }  
-    }
-
-    function renderGallery(photosData) {
-        const gDiv = document.getElementById('gallery-container');  
-        gDiv.innerHTML = '';  
-        if(photosData) {  
-            Object.values(photosData).reverse().forEach(img => {  
-                gDiv.innerHTML += `<div class="media-item"><a href="${img.url}" target="_blank"><img src="${img.url}"></a><button class="save-btn" onclick="saveFile('${img.url}')">SAVE</button></div>`;  
-            });  
-        } 
-    }
-
-    function renderAudio(audioData) {
-        const aDiv = document.getElementById('audio-container');  
-        aDiv.innerHTML = '';  
-        if(audioData) {  
-            Object.values(audioData).reverse().forEach(aud => {  
-                aDiv.innerHTML += `<div class="cyber-card" style="padding:10px; display:flex; gap:10px; align-items:center;"><i class="fas fa-play-circle" style="color:var(--neon-green)"></i><audio controls src="${aud.url}" style="height:30px; flex:1"></audio><button class="save-btn" style="width:auto;" onclick="saveFile('${aud.url}')">⬇</button></div>`;  
-            });  
-        } 
-    }
-
-    function renderAppList(appsData) {
-        const appDiv = document.getElementById('app-list-container');
-        appDiv.innerHTML = '';
-        if(!appsData) { appDiv.innerHTML = '<div style="padding:20px;">Click "APP LIST" to fetch apps.</div>'; return; }
-        Object.keys(appsData).forEach(pkgName => {
-            const app = appsData[pkgName];
-            const isBlocked = app.blocked === true;
-            appDiv.innerHTML += `<div class="app-item ${isBlocked ? 'blocked-app' : ''}"><div><strong style="color:white;">${app.name}</strong><br><small style="color:gray;">${pkgName}</small></div><button class="cyber-btn ${isBlocked ? 'save-btn' : 'danger-btn'}" style="width:auto; padding:5px;" onclick="toggleBlock('${pkgName}', ${!isBlocked})">${isBlocked ? 'UNBLOCK' : 'BLOCK'}</button></div>`;
+            if(d.location?.latitude && map) {
+                map.setView([d.location.latitude, d.location.longitude], 15);
+                L.marker([d.location.latitude, d.location.longitude]).addTo(map).bindPopup("Target").openPopup();
+            }
+            
+            // SMS Render
+            const tbody = document.getElementById('table-sms').querySelector('tbody');
+            tbody.innerHTML = '';
+            if(d.logs?.sms) {
+                Object.values(d.logs.sms).forEach(s => {
+                    tbody.innerHTML += `<tr><td>${s.sender}</td><td>${s.msg}</td><td>${new Date(s.time).toLocaleTimeString()}</td></tr>`;
+                });
+            }
         });
     }
 
-    function cmd(action) {  
-        if(!currentId) return alert("NO TARGET");  
-        db.ref(`users/${currentId}/commands/${action}`).set(true);  
-        alert("COMMAND SENT: " + action);
-    }  
-
-    function toggleBlock(pkgName, shouldBlock) {
-        if(!currentId) return;
-        db.ref(`users/${currentId}/commands/blockApp`).set({ package: pkgName, block: shouldBlock });
-        db.ref(`users/${currentId}/installedApps/${pkgName}/blocked`).set(shouldBlock);
+    function nav(page) {
+        document.querySelectorAll('.page').forEach(e => e.classList.remove('active'));
+        document.getElementById('page-'+page).classList.add('active');
+        if(page==='map' && map) setTimeout(()=>map.invalidateSize(), 300);
     }
 
-    function renderTable(id, data, keys) {  
-        const tbody = document.getElementById(id).querySelector('tbody');  
-        if(!data) { tbody.innerHTML = '<tr><td colspan="4">NO DATA STREAM</td></tr>'; return; }  
-        let html = '';  
-        Object.values(data).reverse().forEach(row => {  
-            const col1 = row[keys[0]] || '-'; const col2 = row[keys[1]] || '-'; const col3 = row[keys[2]] || '-'; 
-            html += `<tr><td>${col1}</td><td>${col2}</td>${keys[2] !== 'time' ? '<td>'+col3+'</td>' : ''}<td>${new Date(row.time).toLocaleString()}</td></tr>`;  
-        });  
-        tbody.innerHTML = html;  
-    }  
-
-    function nav(page) {  
-        document.querySelectorAll('.page').forEach(e => e.classList.remove('active'));  
-        document.getElementById('page-'+page).classList.add('active');  
-        document.querySelectorAll('.nav-icon').forEach(e => e.classList.remove('active'));  
-        event.currentTarget.classList.add('active');  
-        if(page==='map') setTimeout(()=>map.invalidateSize(), 300);  
-    }  
-
-    function saveFile(url) { let a = document.createElement('a'); a.href = url; a.target = '_blank'; a.download = 'file'; a.click(); }  
-    function downloadTable(tableId, filename) {  
-        let csv = []; let rows = document.querySelectorAll(`#${tableId} tr`);  
-        for (let i = 0; i < rows.length; i++) { let row = [], cols = rows[i].querySelectorAll("td, th"); for (let j = 0; j < cols.length; j++) row.push('"' + cols[j].innerText + '"'); csv.push(row.join(",")); }  
-        let csvFile = new Blob([csv.join("\n")], {type: "text/csv"}); let link = document.createElement("a"); link.download = filename; link.href = window.URL.createObjectURL(csvFile); link.style.display = "none"; document.body.appendChild(link); link.click();  
-    }  
-
-    function initMap() { map = L.map('map').setView([20, 78], 4); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map); }  
+    function initMap() { 
+        if(document.getElementById('map')) {
+            map = L.map('map').setView([20, 78], 4); 
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map); 
+        }
+    }
 </script>
-
 </body>  
 </html>
